@@ -57,11 +57,25 @@ public sealed class OpNode : ExprNode
             _ => '?'
         };
  
-        // Only wrap children in parentheses when they are themselves operators
-        string left  = _left is OpNode ? $"({_left.Render()})" : _left.Render();
-        string right = _right is OpNode ? $"({_right.Render()})" : _right.Render();
+        string left = RenderChild(_left);
+        string right = RenderChild(_right);
 
         // Beauuuuutiful
         return $"{left} {symbol} {right}";
+    }
+
+    // Renders a child node, adding parentheses if it's an operator or a negative value
+    private static string RenderChild(ExprNode node)
+    {
+        if (node is OpNode)
+            return $"({node.Render()})";
+
+        if (node is ValueNode valueNode)
+        {
+            string text = valueNode.Render();
+            return text.StartsWith('-') ? $"({text})" : text;
+        }
+
+        return node.Render();
     }
 }
