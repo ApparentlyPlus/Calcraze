@@ -28,28 +28,47 @@ public class ExpressionConfig
  
     public static ExpressionConfig Easy => new()
     {
-        MaxDepth = 1, TargetMin = 1, TargetMax = 10,
+        MaxDepth = 2, TargetMin = 1, TargetMax = 18,
         LeafMin = 1, LeafMax = 10,
         AllowNegative = false,
-        AddWeight = 1, SubtractWeight = 1, MultiplyWeight = 0, DivideWeight = 0,
-        LeafBias = 0.0
+        AddWeight = 3, SubtractWeight = 3, MultiplyWeight = 0, DivideWeight = 0,
+        LeafBias = 0.6
     };
- 
+
     public static ExpressionConfig Medium => new()
     {
-        MaxDepth = 2, TargetMin = 1, TargetMax = 50,
+        MaxDepth = 2, TargetMin = 2, TargetMax = 45,
         LeafMin = 1, LeafMax = 12,
         AllowNegative = false,
-        AddWeight = 3, SubtractWeight = 3, MultiplyWeight = 2, DivideWeight = 1,
-        LeafBias = 0.2
+        AddWeight = 3, SubtractWeight = 3, MultiplyWeight = 1, DivideWeight = 1,
+        LeafBias = 0.25
     };
- 
+
+    public static ExpressionConfig Balanced => Medium;
+
     public static ExpressionConfig Hard => new()
     {
-        MaxDepth = 3, TargetMin = -20, TargetMax = 100,
-        LeafMin = 1, LeafMax = 12,
+        MaxDepth = 3, TargetMin = -20, TargetMax = 90,
+        LeafMin = 1, LeafMax = 15,
         AllowNegative = true,
-        AddWeight = 2, SubtractWeight = 2, MultiplyWeight = 3, DivideWeight = 2,
-        LeafBias = 0.15
+        AddWeight = 2, SubtractWeight = 2, MultiplyWeight = 2, DivideWeight = 1,
+        LeafBias = 0.18
+    };
+
+    // Utility to create a copy of the config for presets so that 
+    // we don't accidentally modify the static instances
+    public ExpressionConfig Copy() => new()
+    {
+        MaxDepth = MaxDepth,
+        TargetMin = TargetMin,
+        TargetMax = TargetMax,
+        LeafMin = LeafMin,
+        LeafMax = LeafMax,
+        AllowNegative = AllowNegative,
+        AddWeight = AddWeight,
+        SubtractWeight = SubtractWeight,
+        MultiplyWeight = MultiplyWeight,
+        DivideWeight = DivideWeight,
+        LeafBias = LeafBias,
     };
 }
