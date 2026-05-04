@@ -115,7 +115,7 @@
                            Foreground="#E8E8E2"/>
 
                 <!-- Tagline -->
-                <TextBlock Text="mental arithmetic  ·  beat the clock"
+                <TextBlock Text="mental arithmetic  -  beat the clock"
                            FontSize="11"
                            LetterSpacing="3"
                            Foreground="#9C9CAD"
