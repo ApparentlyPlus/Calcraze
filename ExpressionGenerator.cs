@@ -23,17 +23,23 @@ public class ExpressionGenerator
     // Core builder
     private ExprNode Build(int depth, int target, ExpressionConfig config)
     {
+        int minLeaf = config.AllowNegative ? -config.LeafMax : config.LeafMin;
+        int maxLeaf = config.LeafMax;
+        bool targetInLeafRange = target >= minLeaf && target <= maxLeaf;
+
         // Produce a leaf when we've exhausted depth or a random roll says so
         bool isLeaf = depth == 0 || (depth < config.MaxDepth && _rng.NextDouble() < config.LeafBias);
- 
+
+        if (isLeaf && !targetInLeafRange && depth > 0)
+            isLeaf = false;
+
         if (isLeaf)
         {
-            // Clamp the target to the allowed leaf range
-            // When AllowNegative is false we never let a leaf be negative
-
-            int minLeaf = config.AllowNegative ? -config.LeafMax : config.LeafMin;
-            int clamped = Math.Clamp(target, minLeaf, config.LeafMax);
-            return new ValueNode(clamped);
+            // Preserve the exact target when depth is exhausted to avoid
+            // integer division artifacts further up the tree
+            int value = (depth == 0 || targetInLeafRange) ? target
+                : Math.Clamp(target, minLeaf, maxLeaf);
+            return new ValueNode(value);
         }
  
         // Pick a random operator from the enabled set
@@ -123,7 +129,10 @@ public class ExpressionGenerator
             case OpNode.Operator.Divide:
             {
                 // left / right = target, pick right (divisor), left = target * right
-                int right = _rng.Next(config.LeafMin, maxLeaf + 1);
+                int minDivisor = Math.Max(config.LeafMin, 2);
+                int right = minDivisor <= maxLeaf
+                    ? _rng.Next(minDivisor, maxLeaf + 1)
+                    : _rng.Next(config.LeafMin, maxLeaf + 1);
                 int left  = target * right;
                 return (left, right);
             }
@@ -147,6 +156,14 @@ public class ExpressionGenerator
         {
             if (absTarget % i == 0)
             {
+                if (i == 1)
+                {
+                    int primaryComplement = absTarget / i;
+                    if (primaryComplement != i)
+                        CheckAndAdd(primaryComplement, target, config, factors);
+                    continue;
+                }
+
                 // Potential factor 1 -> i
                 // Potential factor 2 -> absTarget / i
                 CheckAndAdd(i, target, config, factors);
@@ -164,6 +181,9 @@ public class ExpressionGenerator
     // Helper for GetFactors to check if a factor (or its negative) is valid and add it to the list
     private static void CheckAndAdd(int factor, int target, ExpressionConfig config, List<int> list)
     {
+        if (Math.Abs(factor) == Math.Abs(target))
+            return;
+
         // Check positive version
         if (factor >= config.LeafMin && factor <= config.LeafMax && target % factor == 0)
             list.Add(factor);
