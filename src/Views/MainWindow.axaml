@@ -1,0 +1,348 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Calcraze.ViewModels"
+        xmlns:views="using:Calcraze.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="Calcraze.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        x:Name="RootWindow"
+        Icon="/src/Assets/appicon.ico"
+        Title="Calcraze"
+        Width="1230" Height="840"
+        MinWidth="620" MinHeight="440"
+        Background="#0B0B0D">
+
+    <Window.Styles>
+
+        <!-- Global resets -->
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="#F4F4F1"/>
+        </Style>
+
+        <!-- START button -->
+        <Style Selector="Button.cta">
+            <Setter Property="Background"                Value="Transparent"/>
+            <Setter Property="Foreground"                Value="#EFA94A"/>
+            <Setter Property="BorderBrush"               Value="#EFA94A"/>
+            <Setter Property="BorderThickness"           Value="1"/>
+            <Setter Property="Padding"                   Value="52,15"/>
+            <Setter Property="FontSize"                  Value="11"/>
+            <Setter Property="LetterSpacing"             Value="6"/>
+            <Setter Property="FontWeight"                Value="Medium"/>
+            <Setter Property="Cursor"                    Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+        <!-- Ghost button (settings) -->
+        <Style Selector="Button.ghost">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#B9B9C7"/>
+            <Setter Property="BorderBrush" Value="#2F2F3B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="18,8"/>
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="LetterSpacing" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#1A1A24"/>
+            <Setter Property="TextElement.Foreground" Value="#E8E8E2"/>
+        </Style>
+        <!-- Hover: fill with accent, flip text to dark -->
+        <Style Selector="Button.cta:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#EFA94A"/>
+            <Setter Property="TextElement.Foreground" Value="#0B0B0D"/>
+        </Style>
+        <!-- Pressed: slight dim -->
+        <Style Selector="Button.cta:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#D4923A"/>
+            <Setter Property="TextElement.Foreground" Value="#0B0B0D"/>
+        </Style>
+
+        <!-- ANSWER TextBox -->
+        <Style Selector="TextBox.answer">
+            <Setter Property="Background"        Value="Transparent"/>
+            <Setter Property="BorderThickness"   Value="0,0,0,2"/>
+            <Setter Property="BorderBrush"       Value="#252530"/>
+            <Setter Property="Foreground"        Value="#E8E8E2"/>
+            <Setter Property="CaretBrush"        Value="#EFA94A"/>
+            <Setter Property="SelectionBrush"    Value="#3D3020"/>
+            <Setter Property="FontSize"          Value="34"/>
+            <Setter Property="FontFamily"        Value="Consolas,Courier New,monospace"/>
+            <Setter Property="FontWeight"        Value="Light"/>
+            <Setter Property="TextAlignment"     Value="Center"/>
+            <Setter Property="Padding"           Value="24,14"/>
+            <Setter Property="MinWidth"          Value="180"/>
+            <Setter Property="MaxWidth"          Value="240"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <!-- Focus: glow the bottom border amber -->
+        <Style Selector="TextBox.answer:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="#EFA94A"/>
+        </Style>
+        <!-- Remove inner focus ring that Fluent theme adds -->
+        <Style Selector="TextBox.answer /template/ Border#PART_BorderElement">
+            <Setter Property="CornerRadius" Value="0"/>
+        </Style>
+
+    </Window.Styles>
+
+    <!-- ROOT two screens stacked and opacity drives fade transitions -->
+    <Grid>
+
+           <!-- START SCREEN -->
+        <Panel IsHitTestVisible="{Binding StartHitTest}"
+               Opacity="{Binding StartOpacity}">
+            <Panel.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity"
+                                      Duration="0:0:0.55"
+                                      Easing="CubicEaseInOut"/>
+                </Transitions>
+            </Panel.Transitions>
+
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Spacing="0">
+
+                <!-- App name -->
+                <TextBlock Text="CALCRAZE"
+                           FontSize="56"
+                           FontWeight="Thin"
+                           LetterSpacing="18"
+                           HorizontalAlignment="Center"
+                           Foreground="#E8E8E2"/>
+
+                <!-- Tagline -->
+                <TextBlock Text="mental arithmetic  -  beat the clock"
+                           FontSize="11"
+                           LetterSpacing="3"
+                           Foreground="#9C9CAD"
+                           HorizontalAlignment="Center"
+                           Margin="0,18,0,0"/>
+
+                <!-- Previous score -->
+                <StackPanel IsVisible="{Binding HasPlayedBefore}"
+                            HorizontalAlignment="Center"
+                            Margin="0,32,0,0"
+                            Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="32">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="LAST SCORE"
+                                       FontSize="9"
+                                       LetterSpacing="4"
+                                       Foreground="#9A9AAD"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding FinalScore}"
+                                       FontSize="20"
+                                       FontWeight="Light"
+                                       Foreground="#D6D6E2"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="HIGH SCORE"
+                                       FontSize="9"
+                                       LetterSpacing="4"
+                                       Foreground="#9A9AAD"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding HighScore}"
+                                       FontSize="20"
+                                       FontWeight="Light"
+                                       Foreground="#E0E0EE"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Gap before button -->
+                <Border Height="{Binding StartButtonGap}"/>
+
+                <!-- Call to action -->
+                <Button Classes="cta"
+                        Content="START"
+                        Command="{Binding StartGameCommand}"
+                        HorizontalAlignment="Center"/>
+
+                <Button Classes="ghost"
+                    Content="SETTINGS"
+                    Command="{Binding OpenSettingsCommand}"
+                    HorizontalAlignment="Center"
+                    Margin="0,18,0,0"/>
+
+                <!-- Tiny hint -->
+                <TextBlock Text="{Binding RoundDurationDisplay}"
+                           FontSize="9"
+                           LetterSpacing="3"
+                           Foreground="#86869C"
+                           HorizontalAlignment="Center"
+                           Margin="0,18,0,0"/>
+
+            </StackPanel>
+        </Panel>
+
+        <!-- GAME SCREEN -->
+         <Panel IsHitTestVisible="{Binding GameHitTest}"
+             Opacity="{Binding GameOpacity}">
+            <Panel.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity"
+                                      Duration="0:0:0.55"
+                                      Easing="CubicEaseInOut"/>
+                </Transitions>
+            </Panel.Transitions>
+
+            <Grid RowDefinitions="Auto,*,Auto">
+
+                <!-- Top bar: Score + Time -->
+                <Grid Grid.Row="0"
+                      Margin="40,32,40,0"
+                      ColumnDefinitions="*,*">
+
+                    <!-- Score (left) -->
+                    <StackPanel Grid.Column="0" Spacing="5">
+                        <TextBlock Text="SCORE"
+                                   FontSize="9"
+                                   LetterSpacing="4"
+                                   Foreground="#9A9AAE"/>
+                        <TextBlock Text="{Binding Score}"
+                                   FontSize="30"
+                                   FontWeight="Light"
+                                   Foreground="#E8E8E2"/>
+                    </StackPanel>
+
+                    <!-- Time (right) -->
+                    <StackPanel Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                Spacing="5">
+                        <TextBlock Text="TIME"
+                                   FontSize="9"
+                                   LetterSpacing="4"
+                                   Foreground="#9A9AAE"
+                                   HorizontalAlignment="Right"/>
+                        <TextBlock Text="{Binding TimeDisplay}"
+                                   FontSize="30"
+                                   FontWeight="Light"
+                                   FontFamily="Consolas,Courier New,monospace"
+                                   Foreground="#E8E8E2"
+                                   HorizontalAlignment="Right"/>
+                    </StackPanel>
+
+                </Grid>
+
+                <!-- Center: Expression + Input + Feedback -->
+                <StackPanel Grid.Row="1"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Spacing="0">
+
+                    <!-- The expression -->
+                    <TextBlock Text="{Binding ExpressionText}"
+                               FontSize="40"
+                               FontWeight="Light"
+                               FontFamily="Consolas,Courier New,monospace"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               MaxWidth="{Binding #RootWindow.Bounds.Width}"
+                               Margin="48,0,48,32"/>
+
+                    <!-- Answer input -->
+                    <TextBox Name="AnswerBox"
+                             Classes="answer"
+                             Text="{Binding AnswerText}"
+                             HorizontalAlignment="Center">
+                        <TextBox.KeyBindings>
+                            <KeyBinding Gesture="Return"
+                                        Command="{Binding SubmitAnswerCommand}"/>
+                        </TextBox.KeyBindings>
+                    </TextBox>
+
+                    <!-- Feedback flash -->
+                    <TextBlock Text="{Binding FeedbackText}"
+                               Foreground="{Binding FeedbackForeground}"
+                               Opacity="{Binding FeedbackOpacity}"
+                               FontSize="12"
+                               LetterSpacing="3"
+                               HorizontalAlignment="Center"
+                               Margin="0,18,0,0"
+                               MinHeight="20">
+                        <TextBlock.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity"
+                                                  Duration="0:0:0.35"
+                                                  Easing="CubicEaseOut"/>
+                            </Transitions>
+                        </TextBlock.Transitions>
+                    </TextBlock>
+
+                </StackPanel>
+
+                <!-- Bottom: Timer bar -->
+                <!--
+                     Pure XAML draining bar, no converter needed.
+                     A full-width amber Border is scaled on X from its
+                     left origin, so it shrinks right-to-left as time runs out.
+                -->
+                <Grid Grid.Row="2" Height="3" HorizontalAlignment="Stretch">
+                    <!-- Dark track -->
+                    <Border Background="#141419"
+                            HorizontalAlignment="Stretch"/>
+                    <!-- Amber fill, ScaleX driven by TimerProgress -->
+                    <Border Background="{Binding TimerBarColor}"
+                            HorizontalAlignment="Stretch"
+                            RenderTransformOrigin="0,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="{Binding TimerProgress}"/>
+                        </Border.RenderTransform>
+                        <Border.Transitions>
+                            <Transitions>
+                                <BrushTransition Property="Background"
+                                                 Duration="0:0:1.5"/>
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+                </Grid>
+
+            </Grid>
+        </Panel>
+
+        <!-- SETTINGS SCREEN -->
+        <Panel IsHitTestVisible="{Binding SettingsHitTest}"
+               Opacity="{Binding SettingsOpacity}">
+            <Panel.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity"
+                                      Duration="0:0:0.55"
+                                      Easing="CubicEaseInOut"/>
+                </Transitions>
+            </Panel.Transitions>
+
+            <Grid RowDefinitions="Auto,*">
+                <Border Background="#0B0B0D"/>
+
+                <Grid Margin="40,28,40,32" RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                        <TextBlock Text="SETTINGS"
+                                   FontSize="14"
+                                   LetterSpacing="6"
+                                   Foreground="#EFA94A"/>
+                        <Button Grid.Column="1"
+                                Classes="ghost"
+                                Content="CLOSE"
+                                Command="{Binding CloseSettingsCommand}"
+                                HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <views:SettingsPanel DataContext="{Binding Settings}"
+                                         Grid.Row="1"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Stretch"
+                                         MaxHeight="{Binding #RootWindow.Bounds.Height}"
+                                         Margin="0,18,0,18"/>
+                </Grid>
+            </Grid>
+        </Panel>
+
+        </Grid>
+</Window>
