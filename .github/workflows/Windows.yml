@@ -1,0 +1,42 @@
+name: Deploy Windows
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish
+        run: dotnet publish /p:PublishProfile=Windows
+
+      - name: Verify publish output
+        run: |
+          if (-not (Test-Path "publish")) {
+            Write-Error "publish/ directory not found
+            exit 1
+          }
+          $files = Get-ChildItem -Path "publish" -Recurse -File
+          if ($files.Count -eq 0) {
+            Write-Error "publish/ directory is empty"
+            exit 1
+          }
+          Write-Host "publish/ contains $($files.Count) file(s)"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-publish
+          path: publish/

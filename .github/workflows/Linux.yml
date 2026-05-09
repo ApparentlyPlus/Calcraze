@@ -1,0 +1,42 @@
+name: Deploy Linux
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish
+        run: dotnet publish /p:PublishProfile=Linux
+
+      - name: Verify publish output
+        run: |
+          if [ ! -d "publish" ]; then
+            echo "::error::publish/ directory not found"
+            exit 1
+          fi
+          count=$(find publish -type f | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "::error::publish/ directory is empty"
+            exit 1
+          fi
+          echo "publish/ contains $count file(s)"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-publish
+          path: publish/
