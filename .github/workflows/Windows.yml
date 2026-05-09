@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  publish:
+  Deploy_Windows:
     runs-on: windows-latest
 
     steps:
@@ -25,15 +25,16 @@ jobs:
       - name: Verify publish output
         run: |
           if (-not (Test-Path "publish")) {
-            Write-Error "publish/ directory not found
+            Write-Error "publish/ directory not found"
             exit 1
           }
           $files = Get-ChildItem -Path "publish" -Recurse -File
-          if ($files.Count -eq 0) {
+          $count = $files.Count
+          if ($count -eq 0) {
             Write-Error "publish/ directory is empty"
             exit 1
           }
-          Write-Host "publish/ contains $($files.Count) file(s)"
+          Write-Host "publish/ contains $count file(s)"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

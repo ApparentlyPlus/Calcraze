@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  publish:
+  Deploy_ARM_MacOS:
     runs-on: macos-15
 
     steps:

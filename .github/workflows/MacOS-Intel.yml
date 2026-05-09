@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  publish:
+  Deploy_Intel_MacOS:
     runs-on: macos-15-intel
 
     steps:
